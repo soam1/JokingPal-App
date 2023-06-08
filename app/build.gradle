@@ -38,5 +38,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation 'com.github.wenchaojiang:AndroidSwipeableCardStack:0.1.6'
+    implementation 'androidx.preference:preference:1.2.0'
 
 }
