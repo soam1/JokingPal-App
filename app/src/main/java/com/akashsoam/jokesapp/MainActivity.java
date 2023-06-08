@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.akashsoam.jokesapp.controller.CardsDataAdapter;
+import com.akashsoam.jokesapp.controller.JokeLikeListener;
 import com.akashsoam.jokesapp.model.Joke;
+import com.akashsoam.jokesapp.model.JokeManager;
 import com.wenchao.cardstack.CardStack;
 
 import org.json.JSONArray;
@@ -18,17 +20,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements CardStack.CardEventListener {
+public class MainActivity extends AppCompatActivity implements CardStack.CardEventListener, JokeLikeListener {
 
     private CardStack mCardStack;
     private CardsDataAdapter mCardAdapter;
     private List<Joke> allJokes;
+
+    private JokeManager mJokeManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         allJokes = new ArrayList<>();
+        mJokeManager = new JokeManager(this);
 
         Log.i("JOKES", loadJSONFromAsset());
 
@@ -38,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
         mCardStack.setContentResource(R.layout.joke_card);
         mCardStack.setStackMargin(20);
 
-        mCardAdapter = new CardsDataAdapter(getApplicationContext(), 0);
+        mCardAdapter = new CardsDataAdapter(this, 0);
 //        mCardAdapter.add("test1");
 //        mCardAdapter.add("test2");
 //        mCardAdapter.add("test3");
@@ -83,8 +88,7 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        for (Joke joke :
-                allJokes) {
+        for (Joke joke : allJokes) {
             mCardAdapter.add(joke.getJokeText());
 
         }
@@ -121,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
 
     @Override
     public boolean swipeEnd(int section, float distance) {
-        return  distance > 300;
+        return distance > 300;
 
     }
 
@@ -143,5 +147,14 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
     @Override
     public void topCardTapped() {
 
+    }
+
+    @Override
+    public void jokeIsLiked(Joke joke) {
+        if (joke.isJokeLiked()) {
+            mJokeManager.saveJoke(joke);
+        } else {
+            mJokeManager.deleteJoke(joke);
+        }
     }
 }

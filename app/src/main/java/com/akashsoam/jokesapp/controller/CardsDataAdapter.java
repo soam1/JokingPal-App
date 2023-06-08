@@ -11,15 +11,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.akashsoam.jokesapp.R;
+import com.akashsoam.jokesapp.model.Joke;
 
 public class CardsDataAdapter extends ArrayAdapter<String> {
 
     private Context mContext;
     private boolean clicked = false;
 
+    private JokeLikeListener mJokeLikeListener;
+
+    private Joke mJoke;
+
     public CardsDataAdapter(@NonNull Context context, int resource) {
         super(context, resource);
         mContext = context;
+        mJokeLikeListener = (JokeLikeListener) context;
     }
 
 
@@ -37,10 +43,14 @@ public class CardsDataAdapter extends ArrayAdapter<String> {
                 if (clicked) {
                     likeButton.setImageResource(R.drawable.like_filled);
                     Toast.makeText(mContext, "You like it👍", Toast.LENGTH_SHORT).show();
+                    mJoke = new Joke(getItem(position), clicked);
+                    mJokeLikeListener.jokeIsLiked(mJoke);
 
                 } else {
                     likeButton.setImageResource(R.drawable.like_empty);
                     Toast.makeText(mContext, "You don't like it now😒", Toast.LENGTH_SHORT).show();
+                    mJoke = new Joke(getItem(position), clicked);
+                    mJokeLikeListener.jokeIsLiked(mJoke);
 
                 }
 
