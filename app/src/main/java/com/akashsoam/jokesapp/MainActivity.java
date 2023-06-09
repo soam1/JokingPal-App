@@ -10,12 +10,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.akashsoam.jokesapp.controller.CardsDataAdapter;
 import com.akashsoam.jokesapp.controller.JokeLikeListener;
 import com.akashsoam.jokesapp.model.Joke;
 import com.akashsoam.jokesapp.model.JokeManager;
 import com.akashsoam.jokesapp.FavJokesActivity;
+import com.arasthel.asyncjob.AsyncJob;
 import com.wenchao.cardstack.CardStack;
 
 import org.json.JSONArray;
@@ -64,48 +66,70 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
 //        mCardAdapter.add("test5");
 
 
-        try {
+        new AsyncJob.AsyncJobBuilder<Boolean>()
+                .doInBackground(new AsyncJob.AsyncAction<Boolean>() {
+                    @Override
+                    public Boolean doAsync() {
+                        // Do some background work
+//                        try {
+//                            Thread.sleep(1000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+                        try {
 
-            JSONObject rootObject = new JSONObject(loadJSONFromAsset());//complete it is json object , then it has several json arrays
-            JSONArray fatJokes = rootObject.getJSONArray("fat");
-            addJokesToArrayList(fatJokes, allJokes);
-            JSONArray stupidJokes = rootObject.getJSONArray("stupid");
-            addJokesToArrayList(stupidJokes, allJokes);
-            JSONArray uglyJokes = rootObject.getJSONArray("ugly");
-            addJokesToArrayList(uglyJokes, allJokes);
-            JSONArray nastyJokes = rootObject.getJSONArray("nasty");
-            addJokesToArrayList(nastyJokes, allJokes);
-            JSONArray odorJokes = rootObject.getJSONArray("odor");
-            addJokesToArrayList(odorJokes, allJokes);
-            JSONArray hairyJokes = rootObject.getJSONArray("hairy");
-            addJokesToArrayList(hairyJokes, allJokes);
-            JSONArray baldJokes = rootObject.getJSONArray("bald");
-            addJokesToArrayList(baldJokes, allJokes);
-            JSONArray oldJokes = rootObject.getJSONArray("old");
-            addJokesToArrayList(oldJokes, allJokes);
-            JSONArray poorJokes = rootObject.getJSONArray("poor");
-            addJokesToArrayList(poorJokes, allJokes);
-            JSONArray shortJokes = rootObject.getJSONArray("short");
-            addJokesToArrayList(shortJokes, allJokes);
-            JSONArray skinnyJokes = rootObject.getJSONArray("skinny");
-            addJokesToArrayList(skinnyJokes, allJokes);
-            JSONArray tallJokes = rootObject.getJSONArray("tall");
-            addJokesToArrayList(tallJokes, allJokes);
-            JSONArray gotJokes = rootObject.getJSONArray("got");
-            addJokesToArrayList(gotJokes, allJokes);
-            JSONArray likeJokes = rootObject.getJSONArray("like");
-            addJokesToArrayList(likeJokes, allJokes);
-            JSONArray miscJokes = rootObject.getJSONArray("misc");
-            addJokesToArrayList(miscJokes, allJokes);
+                            JSONObject rootObject = new JSONObject(loadJSONFromAsset());//complete it is json object , then it has several json arrays
+                            JSONArray fatJokes = rootObject.getJSONArray("fat");
+                            addJokesToArrayList(fatJokes, allJokes);
+                            JSONArray stupidJokes = rootObject.getJSONArray("stupid");
+                            addJokesToArrayList(stupidJokes, allJokes);
+                            JSONArray uglyJokes = rootObject.getJSONArray("ugly");
+                            addJokesToArrayList(uglyJokes, allJokes);
+                            JSONArray nastyJokes = rootObject.getJSONArray("nasty");
+                            addJokesToArrayList(nastyJokes, allJokes);
+                            JSONArray odorJokes = rootObject.getJSONArray("odor");
+                            addJokesToArrayList(odorJokes, allJokes);
+                            JSONArray hairyJokes = rootObject.getJSONArray("hairy");
+                            addJokesToArrayList(hairyJokes, allJokes);
+                            JSONArray baldJokes = rootObject.getJSONArray("bald");
+                            addJokesToArrayList(baldJokes, allJokes);
+                            JSONArray oldJokes = rootObject.getJSONArray("old");
+                            addJokesToArrayList(oldJokes, allJokes);
+                            JSONArray poorJokes = rootObject.getJSONArray("poor");
+                            addJokesToArrayList(poorJokes, allJokes);
+                            JSONArray shortJokes = rootObject.getJSONArray("short");
+                            addJokesToArrayList(shortJokes, allJokes);
+                            JSONArray skinnyJokes = rootObject.getJSONArray("skinny");
+                            addJokesToArrayList(skinnyJokes, allJokes);
+                            JSONArray tallJokes = rootObject.getJSONArray("tall");
+                            addJokesToArrayList(tallJokes, allJokes);
+                            JSONArray gotJokes = rootObject.getJSONArray("got");
+                            addJokesToArrayList(gotJokes, allJokes);
+                            JSONArray likeJokes = rootObject.getJSONArray("like");
+                            addJokesToArrayList(likeJokes, allJokes);
+                            JSONArray miscJokes = rootObject.getJSONArray("misc");
+                            addJokesToArrayList(miscJokes, allJokes);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        for (Joke joke : allJokes) {
-            mCardAdapter.add(joke.getJokeText());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        return true;
+                    }
+                })
+                .doWhenFinished(new AsyncJob.AsyncResultAction<Boolean>() {
+                    @Override
+                    public void onResult(Boolean result) {
+//                        Toast.makeText(getApplicationContext(), "Result was: " + result, Toast.LENGTH_SHORT).show();
+                        for (Joke joke : allJokes) {
+                            mCardAdapter.add(joke.getJokeText());
+                        }
+                        mCardStack.setAdapter(mCardAdapter);
 
-        }
-        mCardStack.setAdapter(mCardAdapter);
+                    }
+                }).create().start();
+
+
+        mCardStack.setListener(this);
     }
 
     public String loadJSONFromAsset() {

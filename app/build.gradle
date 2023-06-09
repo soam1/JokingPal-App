@@ -40,5 +40,7 @@ dependencies {
     implementation 'com.github.wenchaojiang:AndroidSwipeableCardStack:0.1.6'
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'com.github.ChickenHook:RestrictionBypass:2.2'
+    implementation 'com.arasthel:asyncjob-library:1.0.3'
+
 
 }

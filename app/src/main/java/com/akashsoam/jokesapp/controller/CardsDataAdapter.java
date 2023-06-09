@@ -1,6 +1,7 @@
 package com.akashsoam.jokesapp.controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -61,6 +62,13 @@ public class CardsDataAdapter extends ArrayAdapter<String> {
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "You shared it✌️", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                String shareBody = ((TextView)v).getText().toString();
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Yo Mama joke");
+                intent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                v.getContext().startActivity(Intent.createChooser(intent, "Share via"));
+
             }
         });
         return contentView;

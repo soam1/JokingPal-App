@@ -1,9 +1,12 @@
 package com.akashsoam.jokesapp.controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,7 +43,19 @@ public class FavJokeListAdapter extends RecyclerView.Adapter<FavJokeViewHolder> 
         String jokeText = mJokeList.get(position).getJokeText();
         holder.getTxtFavJoke().setText(jokeText);
 
+        holder.getImgButtonShare().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "You shared it✌️", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                String shareBody = jokeText;
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Yo Mama joke");
+                intent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                mContext.startActivity(Intent.createChooser(intent, "Share via"));
 
+            }
+        });
     }
 
 
