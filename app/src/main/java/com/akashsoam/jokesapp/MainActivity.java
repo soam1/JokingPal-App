@@ -5,7 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +30,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements CardStack.CardEventListener, JokeLikeListener {
@@ -36,6 +41,11 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
     private List<Joke> allJokes;
 
     private JokeManager mJokeManager;
+
+    //    The following are used for shake detection
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +75,15 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
 //        mCardAdapter.add("test4");
 //        mCardAdapter.add("test5");
 
+//        ShakeDetector initialization
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeDetector = new ShakeDetector(new ShakeDetector.OnShakeListener() {
+            @Override
+            public void OnShake() {
+                handleShakeEvent();
+            }
+        });
 
         new AsyncJob.AsyncJobBuilder<Boolean>()
                 .doInBackground(new AsyncJob.AsyncAction<Boolean>() {
@@ -130,6 +149,36 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
 
 
         mCardStack.setListener(this);
+    }
+
+    private void handleShakeEvent() {
+        new AsyncJob.AsyncJobBuilder<Boolean>()
+                .doInBackground(new AsyncJob.AsyncAction<Boolean>() {
+                    @Override
+                    public Boolean doAsync() {
+                        // Do some background work
+//                        try {
+//                            Thread.sleep(1000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+                        Collections.shuffle(allJokes);
+                        return true;
+                    }
+                })
+                .doWhenFinished(new AsyncJob.AsyncResultAction<Boolean>() {
+                    @Override
+                    public void onResult(Boolean result) {
+//                        Toast.makeText(getApplicationContext(), "Result was: " + result, Toast.LENGTH_SHORT).show();
+                        mCardAdapter.clear();
+                        mCardAdapter = new CardsDataAdapter(MainActivity.this, 0);
+                        for (Joke joke :
+                                allJokes) {
+                            mCardAdapter.add(joke.getJokeText());
+                        }
+                        mCardStack.setAdapter(mCardAdapter);
+                    }
+                }).create().start();
     }
 
     public String loadJSONFromAsset() {
@@ -207,5 +256,17 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         startActivity(new Intent(MainActivity.this, FavJokesActivity.class));
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    protected void onPause() {
+        mSensorManager.unregisterListener(mShakeDetector);
+        super.onPause();
     }
 }

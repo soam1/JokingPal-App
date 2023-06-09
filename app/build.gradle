@@ -41,6 +41,8 @@ dependencies {
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'com.github.ChickenHook:RestrictionBypass:2.2'
     implementation 'com.arasthel:asyncjob-library:1.0.3'
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
 
 
 }
