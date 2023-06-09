@@ -1,14 +1,21 @@
 package com.akashsoam.jokesapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.akashsoam.jokesapp.controller.CardsDataAdapter;
 import com.akashsoam.jokesapp.controller.JokeLikeListener;
 import com.akashsoam.jokesapp.model.Joke;
 import com.akashsoam.jokesapp.model.JokeManager;
+import com.akashsoam.jokesapp.FavJokesActivity;
 import com.wenchao.cardstack.CardStack;
 
 import org.json.JSONArray;
@@ -32,6 +39,12 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
+
         allJokes = new ArrayList<>();
         mJokeManager = new JokeManager(this);
 
@@ -156,5 +169,19 @@ public class MainActivity extends AppCompatActivity implements CardStack.CardEve
         } else {
             mJokeManager.deleteJoke(joke);
         }
+    }
+
+    //Menu options
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.my_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        startActivity(new Intent(MainActivity.this, FavJokesActivity.class));
+        return super.onOptionsItemSelected(item);
     }
 }
